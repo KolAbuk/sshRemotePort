@@ -19,7 +19,7 @@ class SshRemotePort {
     constructor({ remoteHost, username, password, sshPort, localForwardHost, remoteForwardHost, remoteForwardPort, localForwardPort, keepAliveMs, }) {
         this._stop = false;
         this._closed = false;
-        this.start = (cb) => __awaiter(this, void 0, void 0, function* () {
+        this.start = (cb, cbOnRequest) => __awaiter(this, void 0, void 0, function* () {
             try {
                 this.conn.destroy();
                 this.conn = new ssh2_1.Client();
@@ -33,6 +33,7 @@ class SshRemotePort {
                     });
                 })
                     .on("tcp connection", (info, accept) => {
+                    cbOnRequest ? cbOnRequest(info) : null;
                     const stream = accept();
                     stream.pause();
                     const socket = net_1.default
@@ -64,10 +65,10 @@ class SshRemotePort {
                 throw e;
             }
         });
-        this.run = (_a) => __awaiter(this, [_a], void 0, function* ({ cbOnOpen, cbOnClose, }) {
+        this.run = (_a) => __awaiter(this, [_a], void 0, function* ({ cbOnOpen, cbOnClose, cbOnRequest, }) {
             while (!this._stop) {
                 try {
-                    yield this.start(cbOnOpen);
+                    yield this.start(cbOnOpen, cbOnRequest);
                 }
                 catch (e) {
                     cbOnClose ? cbOnClose(e) : null;

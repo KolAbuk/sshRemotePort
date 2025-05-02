@@ -16,18 +16,19 @@ const _1 = require(".");
     try {
         const ssh = new _1.SshRemotePort({
             sshPort: 22,
-            remoteHost: "193.233.171.72", //"server",
-            username: "tunnel", //"root",
-            password: "sshTunnelUserPass000", //"pass",
+            remoteHost: "server",
+            username: "root",
+            password: "pass",
             localForwardHost: "127.0.0.2",
             remoteForwardHost: "localhost",
             localForwardPort: 80,
-            remoteForwardPort: 8080,
+            remoteForwardPort: 80,
             keepAliveMs: 10000,
         });
         ssh.run({
             cbOnOpen: () => console.log(new Date().toLocaleString(), "OPEN"),
             cbOnClose: (err) => console.log(new Date().toLocaleString(), `CLOSE, ${err.message}`),
+            cbOnRequest: (info) => console.log(info),
         });
         yield new Promise((res) => setTimeout(res, 30000));
         yield ssh.close();

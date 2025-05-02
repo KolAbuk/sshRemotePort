@@ -1,6 +1,6 @@
 {
   "name": "@kolabuk/sshremoteport",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "ssh -R 80:localhost:80 root@server",
   "main": "./dist/index.js",
   "scripts": {

@@ -1,5 +1,7 @@
+import { TcpConnectionDetails } from "ssh2";
 export type cbOnOpen = () => void;
 export type cbOnClose = (e: Error) => void;
+export type cbOnRequest = (info: TcpConnectionDetails) => void;
 export declare class SshRemotePort {
     private conn;
     private remoteHost;
@@ -25,9 +27,10 @@ export declare class SshRemotePort {
         keepAliveMs?: number;
     });
     private start;
-    run: ({ cbOnOpen, cbOnClose, }: {
+    run: ({ cbOnOpen, cbOnClose, cbOnRequest, }: {
         cbOnOpen?: cbOnOpen;
         cbOnClose?: cbOnClose;
+        cbOnRequest?: cbOnRequest;
     }) => Promise<void>;
     close: () => Promise<void>;
 }
