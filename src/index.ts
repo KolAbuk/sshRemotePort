@@ -1,4 +1,4 @@
-import { Client } from "ssh2";
+import { Client, TcpConnectionDetails } from "ssh2";
 import net from "net";
 
 //
@@ -7,6 +7,7 @@ import net from "net";
 
 export type cbOnOpen = () => void;
 export type cbOnClose = (e: Error) => void;
+export type cbOnRequest = (info: TcpConnectionDetails) => void;
 export class SshRemotePort {
   private conn: Client;
   private remoteHost: string;
@@ -53,7 +54,10 @@ export class SshRemotePort {
     this.conn = new Client();
   }
 
-  private start = async (cb?: cbOnOpen): Promise<string> => {
+  private start = async (
+    cb?: cbOnOpen,
+    cbOnRequest?: cbOnRequest
+  ): Promise<string> => {
     try {
       this.conn.destroy();
       this.conn = new Client();
@@ -70,6 +74,7 @@ export class SshRemotePort {
           );
         })
         .on("tcp connection", (info, accept) => {
+          cbOnRequest ? cbOnRequest(info) : null;
           const stream = accept();
           stream.pause();
           const socket = net
@@ -106,13 +111,15 @@ export class SshRemotePort {
   run = async ({
     cbOnOpen,
     cbOnClose,
+    cbOnRequest,
   }: {
     cbOnOpen?: cbOnOpen;
     cbOnClose?: cbOnClose;
+    cbOnRequest?: cbOnRequest;
   }) => {
     while (!this._stop) {
       try {
-        await this.start(cbOnOpen);
+        await this.start(cbOnOpen, cbOnRequest);
       } catch (e: any) {
         cbOnClose ? cbOnClose(e) : null;
       }

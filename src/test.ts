@@ -21,6 +21,7 @@ import { SshRemotePort } from ".";
       cbOnOpen: () => console.log(new Date().toLocaleString(), "OPEN"),
       cbOnClose: (err) =>
         console.log(new Date().toLocaleString(), `CLOSE, ${err.message}`),
+      cbOnRequest: (info) => console.log(info),
     });
     await new Promise((res) => setTimeout(res, 30000));
     await ssh.close();
